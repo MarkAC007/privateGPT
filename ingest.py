@@ -49,13 +49,17 @@ load_dotenv()
 
 
 def load_single_document(file_path: str) -> Document:
-    ext = "." + file_path.rsplit(".", 1)[-1]
-    if ext in LOADER_MAPPING:
-        loader_class, loader_args = LOADER_MAPPING[ext]
-        loader = loader_class(file_path, **loader_args)
-        return loader.load()[0]
-
-    raise ValueError(f"Unsupported file extension '{ext}'")
+    try:
+        ext = "." + file_path.rsplit(".", 1)[-1]
+        if ext in LOADER_MAPPING:
+            loader_class, loader_args = LOADER_MAPPING[ext]
+            loader = loader_class(file_path, **loader_args)
+            return loader.load()[0]
+        else:
+            raise ValueError(f"Unsupported file extension '{ext}'")
+    except AttributeError as e:
+        print(f"Error processing file: {file_path}")
+        raise e
 
 
 def load_documents(source_dir: str) -> List[Document]:
